@@ -47,7 +47,7 @@ pip install dbt-core dbt-snowflake
         grant all on database dbt_db to role dbt_role;
         ```
 
-    6. Finall create a schema in our database `dbt_db` using the role that we just created:
+    6. Finally create a schema in our database `dbt_db` using the role that we just created:
 
         ```sh
         use role dbt_role;
@@ -88,6 +88,10 @@ pip install dbt-core dbt-snowflake
     dbt debug
     ```
 
+- This is what the entire process looks like on the terminal:
+
+![dbt_init_command_image](https://github.com/vatsalmpatel/dbt_project/blob/master/images/dbt_init.png)
+
 ## DBT Transformations:
 
 - Just like a main function in `C++` that is the starting point in a `C` code, `dbt_project.yml` is the starting file for a dbt project. All the necessary information about the different model and how we want to materialize them in snowflake are written here. In our case, we want the `staging` tables to materialize as views and all the `marts` logic to materialize as tables in snowflake.
@@ -106,6 +110,13 @@ pip install dbt-core dbt-snowflake
 2. `dbt test`: Run data tests to validate data quality.
 3. `dbt build`: Run all transformations, tests, and seeding in one command.
 4. `dbt deps`: Install dbt packages listed in packages.yml, which we have in our case.
+5. `dbt run --select model_name`: Execute specified model_name and apply transformations to raw data.
+
+## Snowflake tables, after running the `dbt build command`:
+
+![snowflake_tables_and_views](https://github.com/vatsalmpatel/dbt_project/blob/master/images/snowflake_ss.png)
+
+- **As you can see, all the tables and views have been created in snowflake, as a result of running the `dbt build` command. This means, all the transformations have been applied to our data, following the ELT (Extract, Load and Transform), process, where the E and the L process was already done for us, we just performed the T (Transformation) part of the ELT pipeline.**
 
 ## Teardown and Cleanup:
 
@@ -118,3 +129,9 @@ drop warehouse if exists dbt_wh;
 drop database if exists dbt_db;
 drop role if exists dbt_role;
 ```
+
+## Future Steps and Improvements:
+
+1. We can orchestrate the pipeline (the entire transformation logic) using tools such as `Airflow`, where we can create DAG, and these DAGS will run periodically, and perform transformation on the incoming data.
+2. We can also use a tool such as `Prefect` to orchestrate these transformations on a timely fashion. Both `Airflow` and `Prefect` have built-in functionality to run the pipeline again in case of failures and notify teams in case of failures.
+3. Use this data in further downstream tasks such as data visualization or creating machine learning models to either gain more insights from the data from these visualizations using tools such as PowerBI or Google Looker, which can both connect to snowflake using connectors, or use this data clean it further and train some machine learning models such as Product Recommendations.
