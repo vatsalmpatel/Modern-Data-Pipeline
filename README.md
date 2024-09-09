@@ -118,6 +118,10 @@ pip install dbt-core dbt-snowflake
 
 - **As you can see, all the tables and views have been created in snowflake, as a result of running the `dbt build` command. This means, all the transformations have been applied to our data, following the ELT (Extract, Load and Transform), process, where the E and the L process was already done for us, we just performed the T (Transformation) part of the ELT pipeline.**
 
+## Fivetran Integration
+
+- Additionally, this repo also contains a `deployment.yml` file, which is used to run the jobs on Frvetran on a daily schedule, showcasing use case of Fivetran not just as an integration tool, but also as a tool that can be used to schedule `dbt transformations`. To make this work, go to the `Transformations` tab on Fivetran, setup a dbt transformation, which will ask you to fill out git repo which has the dbt transformations, with the above mentioned `deployment.yml` which will be used by Fivetran to specify when to run the job and what models to run during the job. In my example, I have set  it up to run all the models, but it can be used to run individual models as well. Look at the `datapipeline/deployment.yml` file for more information.
+
 ## Teardown and Cleanup:
 
 - After you are done, you need to cleanup everything on snowflake, so that wwe do not incur any additional costs:
