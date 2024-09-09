@@ -8,3 +8,5 @@ jobs:
        command: dbt run
      - name: test models
        command: dbt test
+
+# dbt run --models stg_tpch_line_items.sql stg_tpch_orders.sql
