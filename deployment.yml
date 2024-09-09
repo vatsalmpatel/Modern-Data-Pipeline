@@ -1,0 +1,10 @@
+jobs:
+ - name: daily_table_refresh
+   targetName: dev 
+   schedule: 0 12 * * * 
+   retryOnFailure: true
+   steps:
+     - name: run models 
+       command: dbt run
+     - name: test models
+       command: dbt test
