@@ -139,3 +139,39 @@ drop role if exists dbt_role;
 1. We can orchestrate the pipeline (the entire transformation logic) using tools such as `Airflow`, where we can create DAG, and these DAGS will run periodically, and perform transformation on the incoming data.
 2. We can also use a tool such as `Prefect` to orchestrate these transformations on a timely fashion. Both `Airflow` and `Prefect` have built-in functionality to run the pipeline again in case of failures and notify teams in case of failures.
 3. Use this data in further downstream tasks such as data visualization or creating machine learning models to either gain more insights from the data from these visualizations using tools such as PowerBI or Google Looker, which can both connect to snowflake using connectors, or use this data clean it further and train some machine learning models such as Product Recommendations.
+
+## Prefect Modification:
+
+To use Prefect, first created a file `prefect_flow.py` with all the necessary `flows` and `tasks`. This file contains code to run the `dbt run` and `dbt test` commands that will materialize the necessary views and tables on Snowflake.
+
+Now, to deploy the code and schedule it to run on a daily basis, we need to create what Prefect calls `deployment`. Now, there are multiple different ways to create deployment (serve, YAML deployment, deploy), we use the YAML deployment method. The step is very simple, we use the in-built recipe, that will use the code locally, and schedule the code on the local Prefect Server (can also be configureed to run using the Prefect Cloud backend). Here are the steps that you need to follow:
+
+1. Start the Prefect Server:
+
+    ```bash
+    prefect server start
+    ```
+
+2. Make sure you have the Prefect code, in our case it is the `prefect_flow.py` file.
+
+3. Now, in order to get the `prefect.yaml` file for deployment, prefect provides a command, run it in the terminal and choose **Store code on a local filesystem**.
+
+    ```bash
+    prefect init
+    ```
+    ![prefect_init_image](https://github.com/vatsalmpatel/dbt_project/blob/master/images/prefect_init.png)
+
+4. Once you choose that, a template `prefect.yaml` file will appear in your directory. Open the file and fill in the necessary fields as seen in the `prefect.yaml` in this repo.
+
+5. To create a **Prefect Deployment**, you will need to use the following command. When oyu run this command, it will automatically pick up the `prefect.yaml` and its configurations and create a deployment on the local Prefect Server, which will look something like the image below:
+
+    ```bash
+    prefect deploy
+    ```
+    ![prefect_deployment](https://github.com/vatsalmpatel/dbt_project/blob/master/images/prefect_deployment_run.png)
+
+6. You will also need to start the worker pool that will listen for any pending/up-coming flows to run, without this, your deployment will not run> Mine runs on the created *deploy-pool*.
+
+    ```bash
+    prefect worker start --pool deploy-pool
+    ```
